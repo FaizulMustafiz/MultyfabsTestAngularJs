@@ -49,28 +49,29 @@
                 $(this).removeClass('tdColor');
             });
 
-            $('#saveButton').click(function () {
-                var machineNo = $('#machineNumberTextBox').val();
-                var empCode = $('#employeeCodeTextBox').val();
-                var empName = $('#empNameTextbox').val();
-                if (machineNo.length > 0 && empCode.length > 0) {
-                    $.ajax({
-                        url: "MultifabsWebService.asmx/IsMachineAssigned",
-                        method: 'post',
-                        data: 'machineNumber=' + machineNo + '&employeeCode=' + empCode,
-                        dataType: 'json',
-                        success: function (data) {
-                            if (data.MachineAssigned) {
-                                $('#divResult').text("Machine " + machineNo + " is already assigned to this " + empCode + " : " + empName);
-                                $('#divResult').css('color', 'red');
-                            } else {
-                                $('#divResult').text("Machine " + machineNo + " is available for this " + empCode + " : " + empName);
-                                $('#divResult').css('color', 'green');
-                            }
-                        }
-                    })
-                }
-            })
+            //$('#saveButton').click(function () {
+            //    var machineNo = $('#machineNumberTextBox').val();
+            //    var empCode = $('#employeeCodeTextBox').val();
+            //    var empName = $('#empNameTextbox').val();
+            //    if (machineNo.length > 0 && empCode.length > 0) {
+            //        $.ajax({
+            //            url: "MultifabsWebService.asmx/IsMachineAssigned",
+            //            method: 'post',
+            //            data: 'machineNumber=' + machineNo + '&employeeCode=' + empCode,
+            //            dataType: 'json',
+            //            success: function (data) {
+            //                console.log(data);
+            //                if (data.MachineAssigned) {
+            //                    $('#divResult').text("Machine " + machineNo + " is already assigned to this " + empCode + " : " + empName);
+            //                    $('#divResult').css('color', 'red');
+            //                } else {
+            //                    $('#divResult').text("Machine " + machineNo + " is available for this " + empCode + " : " + empName);
+            //                    $('#divResult').css('color', 'green');
+            //                }
+            //            }
+            //        })
+            //    }
+            //})
         })
     </script>
 

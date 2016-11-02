@@ -63,21 +63,24 @@ var app = angular
             };
             var machineNo = $scope.machine.MachineNumber;
             var empCode = $scope.operator.EmployeeCode;
-            //var params = { machineNumber: machineNo, employeeCode: empCode }
+            var params = $.param({ 'machineNumber': machineNo, 'employeeCode': empCode }); 
+            console.log(params);
             $http({
-                method: 'post',
-                url: "MultifabsWebService.asmx/IsMachineAssigned",
-                //date: 'machineNumber=' + JSON.parse(machineNo) + '&employeeCode=' + JSON.parse(empCode),
-                contentType: "application/json; charset=utf-8",
-                data: 'machineNumber=' + machineNo + '&employeeCode=' + empCode,
-                datatype: "json"
-            }).success(function (resopnse) {
-                if (data.MachineAssigned) {
+                method: 'POST',
+                url: 'MultifabsWebService.asmx/IsMachineAssigned',
+                data: params,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' } 
+            }).then(function (response) { 
+                console.log(response);
+                if (response.MachineAssigned) {
                     alert("This Machine already assigned");
                 } else {
                     alert("This Machine is available");
                 }
-            })
+            },
+            function (response) { 
+                console.log(response);
+            });
             var machineOperator = {
                 MachineNumber: $scope.machine.MachineNumber,
                 EmployeeCode: $scope.operator.EmployeeCode,
