@@ -1,0 +1,107 @@
+﻿/// <reference path="angular.js" />
+/// <reference path="angular-route.js" />
+/// <reference path="angular-ui-router.js" />
+/// <reference path="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.js" />
+
+var app = angular
+    .module("Demo", ['angularjs-datetime-picker'])
+    .controller("machineController", function ($scope, $http) {
+        var successCallBack = function (response) {
+            $scope.machines = response.data;
+        }
+        var errorCallBack = function (reason) {
+            $scope.error = reason.data;
+        }
+        $scope.edit = function (machine) {
+            $scope.machine = machine;
+        };
+        $http({
+            method: 'get',
+            url: 'MultifabsWebService.asmx/GetAllMachines'
+        }).then(successCallBack, errorCallBack);
+    })
+    .controller("operatorController", function ($scope, $http) {
+        var successCallBack = function (response) {
+            $scope.operators = response.data;
+        }
+        var errorCallBack = function (reason) {
+            $scope.error = reason.data;
+        }
+        $scope.load = function (operator) {
+            $scope.operator = operator;
+        };
+        $http({
+            method: 'get',
+            url: 'MultifabsWebService.asmx/GetAllEmployee'
+        }).then(successCallBack, errorCallBack);
+    })
+    .controller("machineOperatorController", function ($scope, $http) {
+        var successCallBack = function (response) {
+            $scope.machineOperators = response.data;
+        }
+        var errorCallBack = function (reason) {
+            $scope.error = reason.data;
+        }
+        $http({
+            method: 'get',
+            url: 'MultifabsWebService.asmx/GetAllMachineOperators'
+        }).then(successCallBack, errorCallBack);
+    })
+    .controller("scheduleController", function ($scope, $http) {
+        var successCallBack = function (response) {
+            $scope.schedules = response.data;
+        }
+        $http({
+            method: 'get',
+            url: "MultifabsWebService.asmx/GetAllSchedule"
+        }).then(successCallBack);
+    })
+    .controller("OpeatorAssignController", function ($scope, $http) {
+        $scope.add = function () {
+            $scope.change = function (select) {
+                $scope.select = select;
+            };
+            var machineNo = $scope.machine.MachineNumber;
+            var empCode = $scope.operator.EmployeeCode;
+            //var params = { machineNumber: machineNo, employeeCode: empCode }
+            $http({
+                method: 'post',
+                url: "MultifabsWebService.asmx/IsMachineAssigned",
+                //date: 'machineNumber=' + JSON.parse(machineNo) + '&employeeCode=' + JSON.parse(empCode),
+                contentType: "application/json; charset=utf-8",
+                data: 'machineNumber=' + machineNo + '&employeeCode=' + empCode,
+                datatype: "json"
+            }).success(function (resopnse) {
+                if (data.MachineAssigned) {
+                    alert("This Machine already assigned");
+                } else {
+                    alert("This Machine is available");
+                }
+            })
+            var machineOperator = {
+                MachineNumber: $scope.machine.MachineNumber,
+                EmployeeCode: $scope.operator.EmployeeCode,
+                EmployeeName: $scope.operator.EmployeeName,
+                Schedule: $scope.select,
+                EffectDate: $scope.effectFrom
+            };
+            //$http({
+            //    method: 'post',
+            //    url: "MultifabsWebService.asmx/SaveMachineOperator",
+            //    contentType: "application/json; charset=utf-8",
+            //    data: '{machineOperator : ' + JSON.stringify(machineOperator) + '}'
+            //}).then(function () {
+            //    alert("New Operator Assigned");
+            //})
+            //window.location.reload();
+        }
+        $scope.remove = function () {
+            window.location.reload();
+        }
+    })
+
+app.filter("jsDate", function () {
+    return function (x) {
+        return new Date(parseInt(x.substr(6)));
+    };
+});
