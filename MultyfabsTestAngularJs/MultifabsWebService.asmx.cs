@@ -187,5 +187,35 @@ namespace MultyfabsTestAngularJs
             Context.Response.Write(js.Serialize(machineOperator));
         }
 
+        [WebMethod]
+        public void IsScheduleAvailable(string machineNumber, string schedule)
+        {
+            bool scheduleAassigned = false;
+
+            SqlConnection connection = new SqlConnection(connectionString);
+            string query = "spIsScheduleAvailable";
+            SqlCommand command = new SqlCommand(query, connection) { CommandType = CommandType.StoredProcedure };
+            command.Parameters.Add(new SqlParameter()
+            {
+                ParameterName = "@MachineNumber",
+                Value = machineNumber
+            });
+            command.Parameters.Add(new SqlParameter()
+            {
+                ParameterName = "@Schedule",
+                Value = schedule
+            });
+            connection.Open();
+            scheduleAassigned = Convert.ToBoolean(command.ExecuteScalar());
+
+            MachineOperator machineOperator = new MachineOperator();
+            machineOperator.MachineNumber = machineNumber;
+            machineOperator.Schedule = schedule;
+            machineOperator.ScheduleAssigned = scheduleAassigned;
+
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            Context.Response.Write(js.Serialize(machineOperator));
+        }
+
     }
 }

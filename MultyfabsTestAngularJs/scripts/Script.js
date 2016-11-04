@@ -61,26 +61,6 @@ var app = angular
             $scope.change = function (select) {
                 $scope.select = select;
             };
-            var machineNo = $scope.machine.MachineNumber;
-            var empCode = $scope.operator.EmployeeCode;
-            var params = $.param({ 'machineNumber': machineNo, 'employeeCode': empCode }); 
-            console.log(params);
-            $http({
-                method: 'POST',
-                url: 'MultifabsWebService.asmx/IsMachineAssigned',
-                data: params,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' } 
-            }).then(function (response) { 
-                console.log(response);
-                if (response.MachineAssigned) {
-                    alert("This Machine already assigned");
-                } else {
-                    alert("This Machine is available");
-                }
-            },
-            function (response) { 
-                console.log(response);
-            });
             var machineOperator = {
                 MachineNumber: $scope.machine.MachineNumber,
                 EmployeeCode: $scope.operator.EmployeeCode,
@@ -88,20 +68,57 @@ var app = angular
                 Schedule: $scope.select,
                 EffectDate: $scope.effectFrom
             };
-            //$http({
-            //    method: 'post',
-            //    url: "MultifabsWebService.asmx/SaveMachineOperator",
-            //    contentType: "application/json; charset=utf-8",
-            //    data: '{machineOperator : ' + JSON.stringify(machineOperator) + '}'
-            //}).then(function () {
-            //    alert("New Operator Assigned");
-            //})
-            //window.location.reload();
+            var machineNo = $scope.machine.MachineNumber;
+            var empCode = $scope.operator.EmployeeCode;
+            var empName = $scope.operator.EmployeeName;
+            var schedule = $scope.select;
+            var params = $.param({ 'machineNumber': machineNo, 'employeeCode': empCode });
+            var scheduleCheck = $.param({ 'machineNumber': machineNo, 'schedule': schedule });
+            console.log(params);
+            console.log(scheduleCheck);
+            $http({
+                method: 'POST',
+                url: 'MultifabsWebService.asmx/IsScheduleAvailable',
+                data: scheduleCheck,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).then(function (response) {
+                console.log(response);
+                if (response.data.ScheduleAssigned) {
+                    $scope.result = "Machine " + machineNo + " is alredy assigned for this " + schedule + " to " + empName;
+                } else {
+                    $http({
+                        method: 'POST',
+                        url: 'MultifabsWebService.asmx/IsMachineAssigned',
+                        data: params,
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    }).then(function (response) {
+                        console.log(response);
+                        console.log(response.data.EmployeeCode);
+                        console.log(response.data.MachineAssigned);
+                        if (response.data.MachineAssigned === true) {
+                            $scope.result = "Machine " + machineNo + " is already assigned to " + empCode;
+                        } else {
+                            $http({
+                                method: 'post',
+                                url: "MultifabsWebService.asmx/SaveMachineOperator",
+                                contentType: "application/json; charset=utf-8",
+                                data: '{machineOperator : ' + JSON.stringify(machineOperator) + '}'
+                            }).then(function () {
+                                alert("New Operator Assigned");
+                            });
+                            window.location.reload();
+                        }
+                    },
+                function (response) {
+                    console.log(response);
+                });
+                }
+            });
         }
         $scope.remove = function () {
             window.location.reload();
         }
-    })
+    });
 
 app.filter("jsDate", function () {
     return function (x) {

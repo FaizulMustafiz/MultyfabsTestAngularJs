@@ -18,12 +18,11 @@
     <script src="scripts/angular-ui-router.js"></script>
     <script src="scripts/angularjs-datetime-picker.js"></script>
     <link href="Content/angularjs-datetime-picker.css" rel="stylesheet" />
-    <!--<script src="scripts/angular-moment-picker.js"></script>
-    <link href="Content/angular-moment-picker.css" rel="stylesheet"/>-->
     <script src="scripts/Script.js"></script>
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <script src="scripts/jquery-1.9.1.js"></script>
     <script src="scripts/bootstrap.js"></script>
+    <link href="scripts/angular-csp.css" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -48,42 +47,12 @@
             $('#operatorTbl').on('mouseout', 'td', function () {
                 $(this).removeClass('tdColor');
             });
-
-            //$('#saveButton').click(function () {
-            //    var machineNo = $('#machineNumberTextBox').val();
-            //    var empCode = $('#employeeCodeTextBox').val();
-            //    var empName = $('#empNameTextbox').val();
-            //    if (machineNo.length > 0 && empCode.length > 0) {
-            //        $.ajax({
-            //            url: "MultifabsWebService.asmx/IsMachineAssigned",
-            //            method: 'post',
-            //            data: 'machineNumber=' + machineNo + '&employeeCode=' + empCode,
-            //            dataType: 'json',
-            //            success: function (data) {
-            //                console.log(data);
-            //                if (data.MachineAssigned) {
-            //                    $('#divResult').text("Machine " + machineNo + " is already assigned to this " + empCode + " : " + empName);
-            //                    $('#divResult').css('color', 'red');
-            //                } else {
-            //                    $('#divResult').text("Machine " + machineNo + " is available for this " + empCode + " : " + empName);
-            //                    $('#divResult').css('color', 'green');
-            //                }
-            //            }
-            //        })
-            //    }
-            //})
         })
     </script>
-
-
-
-
 </head>
 <body>
-
     <fieldset class="well">
         <legend class="well-legend">Machine Wise Operator Assign</legend>
-
         <!--<div ng-controller="OpeatorAssignController">-->
         <div ng-controller="machineOperatorController">
             <div ng-controller="machineController">
@@ -132,52 +101,56 @@
                                                 </table>
                                             </div>
                                         </fieldset>
-                                        <fieldset class="well" style="height: 400px">
+                                        <fieldset class="well" style="height: 500px">
                                             <legend class="well-legend">New Assign</legend>
                                             <div ng-controller="OpeatorAssignController">
-                                                <div id="divResult" style="text-align: center"></div>
-                                                <table style="align-content: center; border-collapse: separate; border-spacing: 0 1em;" class="tab-pane">
-                                                    <tr>
-                                                        <td class="control-label col-md-3">Machine</td>
-                                                        <td class="col-md-10">
-                                                            <input type="text" id="machineNumberTextBox" class="form-control" ng-model="machine.MachineNumber" disabled="disabled" />
-                                                        </td>
-                                                    </tr>
-                                                    <tr style="padding-top: 12px">
-                                                        <td class="control-label col-md-3">Employee Code</td>
-                                                        <td class="col-md-10">
-                                                            <input type="text" id="employeeCodeTextBox" class="form-control" ng-model="operator.EmployeeCode" disabled="disabled" />
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="control-label col-md-3">Name</td>
-                                                        <td class="col-md-10">
-                                                            <input type="text" id="empNameTextbox" class="form-control" ng-model="operator.EmployeeName" disabled="disabled" />
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="control-label col-md-3">Schedule</td>
-                                                        <td class="col-md-10">
-                                                            <select class="form-control" ng-model="select" ng-change="change(select)">
-                                                                <option value="">Choose a Schedule</option>
-                                                                <option ng-repeat="schedule in schedules" value="{{schedule.ScheduleName}}">{{schedule.ScheduleName}}</option>
-                                                            </select>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="control-label col-md-3">Effective</td>
-                                                        <td class="col-md-10">
-                                                            <input ng-model="effectFrom" datetime-picker date-format="dd/MMM/yyyy" date-only class="form-control" placeholder="Select a date" />
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="control-label col-md-3"></td>
-                                                        <td class="col-md-10">
-                                                            <input type="button" value="Save" class="btn btn-default" ng-click="add()" id="saveButton" />
-                                                            <input type="button" value="Cancle" class="btn btn-danger" ng-click="remove()" />
-                                                        </td>
-                                                    </tr>
-                                                </table>
+                                                <div id="divResult" style="text-align: center">
+                                                    <div style="color: red">{{result}}</div>
+                                                </div>
+                                                <form id="myForm">
+                                                    <table style="align-content: center; border-collapse: separate; border-spacing: 0 1em;">
+                                                        <tr>
+                                                            <td class="control-label col-md-3">Machine</td>
+                                                            <td class="col-md-10">
+                                                                <input type="text" class="form-control" ng-model="machine.MachineNumber" disabled="disabled" required="" placeholder="Select a Machine Number from MachineList"/>
+                                                            </td>
+                                                        </tr>
+                                                        <tr style="padding-top: 12px">
+                                                            <td class="control-label col-md-3">Operator Code</td>
+                                                            <td class="col-md-10">
+                                                                <input type="text" class="form-control" ng-model="operator.EmployeeCode" disabled="disabled" required="" placeholder="Select an Operator Code from OperatorList"/>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="control-label col-md-3">Operator Name</td>
+                                                            <td class="col-md-10">
+                                                                <input type="text" class="form-control" ng-model="operator.EmployeeName" disabled="disabled" required="" placeholder="Select an Operator Name from OperatorList"/>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="control-label col-md-3">Schedule</td>
+                                                            <td class="col-md-10">
+                                                                <select class="form-control" ng-model="select" ng-change="change(select)" required="">
+                                                                    <option value="">Choose a Schedule</option>
+                                                                    <option ng-repeat="schedule in schedules" value="{{schedule.ScheduleName}}">{{schedule.ScheduleName}}</option>
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="control-label col-md-3">Effective</td>
+                                                            <td class="col-md-10">
+                                                                <input ng-model="effectFrom" datetime-picker date-format="dd/MMM/yyyy" date-only class="form-control" placeholder="Select a date.." required="" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="control-label col-md-3"></td>
+                                                            <td class="col-md-10">
+                                                                <input type="submit" value="Save" class="btn btn-default" ng-click="add()" />
+                                                                <input type="submit" value="Cancle" class="btn btn-danger" ng-click="remove()" />
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </form>
                                             </div>
                                         </fieldset>
                                     </div>

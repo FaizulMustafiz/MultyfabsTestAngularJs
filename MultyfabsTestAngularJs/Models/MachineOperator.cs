@@ -14,6 +14,7 @@ namespace MultyfabsTestAngularJs.Models
         public string Schedule { get; set; }
         public string MachineNumber { get; set; }
         public bool MachineAssigned { get; set; }
+        public bool ScheduleAssigned { get; set; }
 
     }
 }
