@@ -96,7 +96,7 @@ var app = angular
                         console.log(response.data.EmployeeCode);
                         console.log(response.data.MachineAssigned);
                         if (response.data.MachineAssigned === true) {
-                            $scope.result = "Machine " + machineNo + " is already assigned to " + empCode;
+                            $scope.result = "Machine " + machineNo + " is already assigned to " + empName;
                         } else {
                             $http({
                                 method: 'post',

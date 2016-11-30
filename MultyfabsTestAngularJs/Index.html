@@ -6,6 +6,12 @@
             background-color: teal;
             color: white;
         }
+        label.error {
+            color: red;
+        }
+        input.error {
+            border: 1px dotted red;
+        }
     </style>
     <title></title>
     <meta charset="utf-8" />
@@ -21,6 +27,8 @@
     <script src="scripts/Script.js"></script>
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <script src="scripts/jquery-1.9.1.js"></script>
+    <script src="scripts/jquery.validate.js"></script>
+    <script src="scripts/jquery.validate-vsdoc.js"></script>
     <script src="scripts/bootstrap.js"></script>
     <link href="scripts/angular-csp.css" rel="stylesheet" />
 
@@ -47,40 +55,63 @@
             $('#operatorTbl').on('mouseout', 'td', function () {
                 $(this).removeClass('tdColor');
             });
+
+            $("#myForm").validate({
+                rules: {
+                    machineNo : "required",
+                    employeeCode : "required",
+                    employeeName: "required",
+                    schedule : "required",
+                    effectDate: "required"
+                },
+                messages: {
+                    machineNo: "Please Select a Machine from Machine List",
+                    employeeCode: "Please Select a Operator from Operator List",
+                    employeeName: "Please Select a Operator from Operator List",
+                    schedule: "Please select a Schedule",
+                    effectDate: "Please Select a Date"
+                }
+            });
+
         })
     </script>
 </head>
 <body>
-    <fieldset class="well">
-        <legend class="well-legend">Machine Wise Operator Assign</legend>
-        <!--<div ng-controller="OpeatorAssignController">-->
-        <div ng-controller="machineOperatorController">
-            <div ng-controller="machineController">
-                <div ng-controller="operatorController">
-                    <div ng-controller="scheduleController">
-                        <table style="border-collapse: separate; border: 1px solid whitesmoke;">
-                            <tr>
-                                <td style="width: 300px; height: 600px; padding-right: 5px">
-                                    <div class="form-group">
-                                        <fieldset class="well">
-                                            <legend class="well-legend">Machine List</legend>
-                                            <table class="table table-bordered" id="machineTbl">
-                                                <tr ng-repeat="machine in machines | filter: searchMachine">
-                                                    <input type="text" ng-model="searchMachine.MachineNumber" class="form-control" placeholder="Search..." />
-                                                    <td ng-click="edit(machine)" style="cursor: pointer">{{machine.MachineNumber}}</td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
-                                    </div>
-                                </td>
+<div class="container">
+    <div class="row">
+        <fieldset class="well">
+            <legend class="well-legend">Machine Wise Operator Assign</legend>
+            <!--<div ng-controller="OpeatorAssignController">-->
+            <div ng-controller="machineOperatorController">
+                <div ng-controller="machineController">
+                    <div ng-controller="operatorController">
+                        <div ng-controller="scheduleController">
+                            <table style="border-collapse: separate; border: 1px solid whitesmoke;">
+                                <tr>
+                                    <td style="width: 300px; height: 600px; padding-right: 5px">
+                                        <div class="form-group">
+                                            <!-- Machine List Table -->
+                                            <fieldset class="well">
+                                                <legend class="well-legend">Machine List</legend>
+                                                <table class="table table-bordered" id="machineTbl">
+                                                    <tr ng-repeat="machine in machines | filter: searchMachine">
+                                                        <input type="text" ng-model="searchMachine.MachineNumber" class="form-control" placeholder="Search..."/>
+                                                        <td ng-click="edit(machine)" style="cursor: pointer">{{machine.MachineNumber}}</td>
+                                                    </tr>
+                                                </table>
+                                            </fieldset>
+                                        </div>
+                                    </td>
 
-                                <td style="width: 700px; height: 600px">
-                                    <div class="form-group">
-                                        <fieldset class="well" style="height: 270px">
-                                            <legend class="well-legend" style="position: inherit">Assigned Information</legend>
-                                            <div style="overflow-y: auto; height: 200px; max-height: 268px;">
-                                                <table class="table table-bordered" style="overflow-y: scroll" id="machineOperatorTbl">
-                                                    <thead style="background-color: teal; color: white">
+                                    <td style="width: 700px; height: 600px">
+                                        <div class="form-group">
+                                            
+                                            <!-- Assigned Information Table -->
+                                            <fieldset class="well" style="height: 270px">
+                                                <legend class="well-legend" style="position: inherit">Assigned Information</legend>
+                                                <div style="overflow-y: auto; height: 200px; max-height: 268px;">
+                                                    <table class="table table-bordered" style="overflow-y: scroll" id="machineOperatorTbl">
+                                                        <thead style="background-color: teal; color: white">
                                                         <tr>
                                                             <th>Machine.No</th>
                                                             <th>Schedule</th>
@@ -88,8 +119,8 @@
                                                             <th>Name</th>
                                                             <th>Eff.Date</th>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
+                                                        </thead>
+                                                        <tbody>
                                                         <tr ng-repeat="machineOperator in machineOperators">
                                                             <td>{{machineOperator.MachineNumber}}</td>
                                                             <td>{{machineOperator.Schedule}}</td>
@@ -97,87 +128,91 @@
                                                             <td>{{machineOperator.EmployeeName}}</td>
                                                             <td>{{machineOperator.EffectDate | jsDate | date: "dd/MMM/yyyy"}}</td>
                                                         </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </fieldset>
-                                        <fieldset class="well" style="height: 500px">
-                                            <legend class="well-legend">New Assign</legend>
-                                            <div ng-controller="OpeatorAssignController">
-                                                <div id="divResult" style="text-align: center">
-                                                    <div style="color: red">{{result}}</div>
-                                                </div>
-                                                <form id="myForm">
-                                                    <table style="align-content: center; border-collapse: separate; border-spacing: 0 1em;">
-                                                        <tr>
-                                                            <td class="control-label col-md-3">Machine</td>
-                                                            <td class="col-md-10">
-                                                                <input type="text" class="form-control" ng-model="machine.MachineNumber" disabled="disabled" required="" placeholder="Select a Machine Number from MachineList"/>
-                                                            </td>
-                                                        </tr>
-                                                        <tr style="padding-top: 12px">
-                                                            <td class="control-label col-md-3">Operator Code</td>
-                                                            <td class="col-md-10">
-                                                                <input type="text" class="form-control" ng-model="operator.EmployeeCode" disabled="disabled" required="" placeholder="Select an Operator Code from OperatorList"/>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="control-label col-md-3">Operator Name</td>
-                                                            <td class="col-md-10">
-                                                                <input type="text" class="form-control" ng-model="operator.EmployeeName" disabled="disabled" required="" placeholder="Select an Operator Name from OperatorList"/>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="control-label col-md-3">Schedule</td>
-                                                            <td class="col-md-10">
-                                                                <select class="form-control" ng-model="select" ng-change="change(select)" required="">
-                                                                    <option value="">Choose a Schedule</option>
-                                                                    <option ng-repeat="schedule in schedules" value="{{schedule.ScheduleName}}">{{schedule.ScheduleName}}</option>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="control-label col-md-3">Effective</td>
-                                                            <td class="col-md-10">
-                                                                <input ng-model="effectFrom" datetime-picker date-format="dd/MMM/yyyy" date-only class="form-control" placeholder="Select a date.." required="" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="control-label col-md-3"></td>
-                                                            <td class="col-md-10">
-                                                                <input type="submit" value="Save" class="btn btn-default" ng-click="add()" />
-                                                                <input type="submit" value="Cancle" class="btn btn-danger" ng-click="remove()" />
-                                                            </td>
-                                                        </tr>
+                                                        </tbody>
                                                     </table>
-                                                </form>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </td>
+                                                </div>
+                                            </fieldset>
 
-                                <td style="width: 350px; height: 600px; padding-left: 5px">
-                                    <div class="form-group">
-                                        <fieldset class="well">
-                                            <legend class="well-legend">Available Operator</legend>
-                                            <table class="table table-bordered" id="operatorTbl">
-                                                <tr ng-repeat="operator in operators | filter: searchEmployee">
-                                                    <input type="text" ng-model="searchEmployee.EmployeeCode" class="form-control" placeholder="Search by Employee Code..." />
-                                                    <td ng-click="load(operator)" style="cursor: pointer">{{operator.EmployeeCode}} : {{operator.EmployeeName}}</td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                                            <!-- New Assign Form -->
+                                            <fieldset class="well" style="height: 500px">
+                                                <legend class="well-legend">New Assign</legend>
+                                                <div ng-controller="OpeatorAssignController">
+                                                    <div id="divResult" style="text-align: center">
+                                                        <div style="color: red">{{result}}</div>
+                                                    </div>
+                                                    <form id="myForm">
+                                                        <table style="align-content: center; border-collapse: separate; border-spacing: 0 1em;">
+                                                            <tr>
+                                                                <td class="control-label col-md-3">Machine</td>
+                                                                <td class="col-md-10">
+                                                                    <input type="text" class="form-control" name="machineNo" ng-model="machine.MachineNumber" disabled="disabled" placeholder="Select a Machine Number from MachineList"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr style="padding-top: 12px">
+                                                                <td class="control-label col-md-3">Operator Code</td>
+                                                                <td class="col-md-10">
+                                                                    <input type="text" class="form-control" name="employeeCode" ng-model="operator.EmployeeCode" disabled="disabled" placeholder="Select an Operator Code from OperatorList"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="control-label col-md-3">Operator Name</td>
+                                                                <td class="col-md-10">
+                                                                    <input type="text" class="form-control" name="employeeName" ng-model="operator.EmployeeName" disabled="disabled" placeholder="Select an Operator Name from OperatorList"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="control-label col-md-3">Schedule</td>
+                                                                <td class="col-md-10">
+                                                                    <select class="form-control" ng-model="select" ng-change="change(select)" name="schedule">
+                                                                        <option value="">Choose a Schedule</option>
+                                                                        <option ng-repeat="schedule in schedules" value="{{schedule.ScheduleName}}">{{schedule.ScheduleName}}</option>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="control-label col-md-3">Effective</td>
+                                                                <td class="col-md-10">
+                                                                    <input name="effectDate" ng-model="effectFrom" datetime-picker date-format="dd/MMM/yyyy" date-only class="form-control" placeholder="Select a date.."/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="control-label col-md-3"></td>
+                                                                <td class="col-md-10">
+                                                                    <input type="submit" value="Save" class="btn btn-default" ng-click="add()"/>
+                                                                    <input type="submit" value="Cancle" class="btn btn-danger" ng-click="remove()"/>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </td>
+                                    <!-- Operator List Table -->
+                                    <td style="width: 350px; height: 600px; padding-left: 5px">
+                                        <div class="form-group">
+                                            <fieldset class="well">
+                                                <legend class="well-legend">Available Operator</legend>
+                                                <table class="table table-bordered" id="operatorTbl">
+                                                    <tr ng-repeat="operator in operators | filter: searchEmployee">
+                                                        <input type="text" ng-model="searchEmployee.EmployeeCode" class="form-control" placeholder="Search by Employee Code..."/>
+                                                        <td ng-click="load(operator)" style="cursor: pointer">{{operator.EmployeeCode}} : {{operator.EmployeeName}}</td>
+                                                    </tr>
+                                                </table>
+                                            </fieldset>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!--</div>-->
-
-    </fieldset>
+            <!--</div>-->
+        </fieldset>
+        <div class="panel-footer" style="text-align: center"><b>@Copyright <a href="https://github.com/FaizulMustafiz">Faizul Mustafiz</a></b></div>
+    </div>
+</div>
 
 </body>
 </html>
